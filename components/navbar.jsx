@@ -1,277 +1,102 @@
 "use client";
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useState } from "react";
 import React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import logo from "@/assets/images/logo-white.png";
-import profileDefault from "@/assets/images/profile.png";
-import { FaGoogle } from "react-icons/fa";
-import { signIn, signOut, useSession, getProviders } from "next-auth/react";
-import UnReadMsgCount from "./UnReadMsgCount";
+import UnreadMessageCount from "./UnReadMsgCount";
+import { useRouter } from "next/navigation";
 
 export default function NavBar() {
-  const { data: session } = useSession();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [providers, setProviders] = useState(null);
-  const pathName = usePathname();
-
-  const profileImage = session?.user?.image;
-
-  useEffect(() => {
-    const setAuthProviders = async () => {
-      const res = await getProviders();
-      setProviders(res);
-    };
-
-    setAuthProviders();
-  }, []);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const router = useRouter();
 
   return (
-    <nav className="bg-blue-700 border-b border-blue-500">
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-        <div className="relative flex h-20 items-center justify-between">
-          <div className="absolute inset-y-0 left-0 flex items-center md:hidden">
-            {/* <!-- Mobile menu button--> */}
+    <nav className="bg-white border-gray-200 dark:bg-gray-900">
+      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+          <img
+            src="https://flowbite.com/docs/images/logo.svg"
+            className="h-8"
+            alt="Flowbite Logo"
+          />
+          <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+            Khatijaaz
+          </span>
+        </a>
+        <div className="flex md:order-2">
+          <div className="flex items-center justify-center">
             <button
               type="button"
-              id="mobile-dropdown-button"
-              className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-              aria-controls="mobile-menu"
-              aria-expanded="false"
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              onClick={() => router.push(`/cart`)}
+              className="relative inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-              <span className="absolute -inset-0.5"></span>
-              <span className="sr-only">Open main menu</span>
               <svg
-                className="block h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
+                className="w-3.5 h-3.5 me-2"
                 aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 18 21"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                />
+                <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z" />
               </svg>
+              Cart
+              <UnreadMessageCount />
             </button>
           </div>
-
-          <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
-            {/* <!-- Logo --> */}
-            <Link className="flex flex-shrink-0 items-center" href="/">
-              <Image className="h-10 w-auto" src={logo} alt="PropertyPulse" />
-
-              <span className="hidden md:block text-white text-2xl font-bold ml-2">
-                PropertyPulse
-              </span>
-            </Link>
-            {/* <!-- Desktop Menu Hidden below md screens --> */}
-            <div className="hidden md:ml-6 md:block">
-              <div className="flex space-x-2">
-                <Link
-                  href="/"
-                  className={`${
-                    pathName === "/" ? "bg-black" : ""
-                  } text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2`}
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/properties"
-                  className={`${
-                    pathName === "/properties" ? "bg-black" : ""
-                  } text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2`}
-                >
-                  Properties
-                </Link>
-                {session && (
-                  <Link
-                    href="/properties/add"
-                    className={`${
-                      pathName === "/properties/add" ? "bg-black" : ""
-                    } text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2`}
-                  >
-                    Add Property
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* <!-- Right Side Menu (Logged Out) --> */}
-          {!session && (
-            <div className="hidden md:block md:ml-6">
-              <div className="flex items-center">
-                {providers &&
-                  Object.values(providers).map((provider, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => signIn(provider.id)}
-                      className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
-                    >
-                      <FaGoogle className="mr-2 text-white" />
-                      <span>Login or Register</span>
-                    </button>
-                  ))}
-              </div>
-            </div>
-          )}
-
-          {/* <!-- Right Side Menu (Logged In) --> */}
-          {session && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
-              <Link href="/messages" className="relative group">
-                <button
-                  type="button"
-                  className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                >
-                  <span className="absolute -inset-1.5"></span>
-                  <span className="sr-only">View notifications</span>
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
-                    />
-                  </svg>
-                </button>
-                <UnReadMsgCount session={session} />
-              </Link>
-              {/* <!-- Profile dropdown button --> */}
-              <div className="relative ml-3">
-                <div>
-                  <button
-                    type="button"
-                    className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                    id="user-menu-button"
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                    onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-                  >
-                    <span className="absolute -inset-1.5"></span>
-                    <span className="sr-only">Open user menu</span>
-                    <Image
-                      className="h-8 w-8 rounded-full"
-                      src={profileImage || profileDefault}
-                      alt=""
-                      width={40}
-                      height={40}
-                    />
-                  </button>
-                </div>
-
-                {/* <!-- Profile dropdown --> */}
-                {isProfileMenuOpen && (
-                  <div
-                    id="user-menu"
-                    className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                    role="menu"
-                    aria-orientation="vertical"
-                    aria-labelledby="user-menu-button"
-                    tabIndex="-1"
-                  >
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700"
-                      role="menuitem"
-                      tabIndex="-1"
-                      id="user-menu-item-0"
-                      onClick={() => {
-                        setIsProfileMenuOpen(false);
-                      }}
-                    >
-                      Your Profile
-                    </Link>
-                    <Link
-                      href="/properties/saved"
-                      className="block px-4 py-2 text-sm text-gray-700"
-                      role="menuitem"
-                      tabIndex="-1"
-                      id="user-menu-item-2"
-                      onClick={() => {
-                        setIsProfileMenuOpen(false);
-                      }}
-                    >
-                      Saved Properties
-                    </Link>
-                    <button
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700"
-                      role="menuitem"
-                      tabIndex="-1"
-                      id="user-menu-item-2"
-                      onClick={() => {
-                        setIsProfileMenuOpen(false);
-                        signOut();
-                      }}
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          <button
+            data-collapse-toggle="navbar-search"
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            type="button"
+            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            aria-controls="navbar-search"
+            aria-expanded="false"
+          >
+            <span className="sr-only">Open main menu</span>
+            <svg
+              className="w-5 h-5"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 17 14"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M1 1h15M1 7h15M1 13h15"
+              />
+            </svg>
+          </button>
+        </div>
+        {/* Toggle hidden */}
+        <div
+          className={`items-center justify-between ${
+            showMobileMenu ? "" : "hidden"
+          } w-full md:flex md:w-auto md:order-1`}
+          id="navbar-search"
+        >
+          <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <li>
+              <a
+                href="#"
+                onClick={() => router.push("/")}
+                className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={() => router.push("/orders")}
+                className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                aria-current="page"
+              >
+                Orders
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-
-      {/* <!-- Mobile menu, show/hide based on menu state. --> */}
-      {isMobileMenuOpen && (
-        <div id="mobile-menu" className="md:hidden">
-          <div className="space-y-1 px-2 pb-3 pt-2">
-            <Link
-              href="/"
-              className={`${
-                pathName === "/" ? "bg-black" : ""
-              } text-gray-300 hover:bg-gray-900 hover:text-white block rounded-md px-3 py-2 text-base font-medium`}
-            >
-              Home
-            </Link>
-            <Link
-              href="/properties"
-              className={`${
-                pathName === "/properties" ? "bg-black" : ""
-              } text-gray-300 hover:bg-gray-900 hover:text-white block rounded-md px-3 py-2 text-base font-medium`}
-            >
-              Properties
-            </Link>
-            {session && (
-              <Link
-                href="/properties/add"
-                className={`${
-                  pathName === "/properties/add" ? "bg-black" : ""
-                } text-gray-300 hover:bg-gray-900 hover:text-white block rounded-md px-3 py-2 text-base font-medium`}
-              >
-                Add Property
-              </Link>
-            )}
-            {!session &&
-              providers &&
-              Object.values(providers).map((provider, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => signIn(provider.id)}
-                  className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2 my-4"
-                >
-                  <FaGoogle className="mr-2 text-white" />
-                  <span>Login or Register</span>
-                </button>
-              ))}
-          </div>
-        </div>
-      )}
     </nav>
   );
 }

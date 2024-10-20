@@ -14,7 +14,7 @@ export default function Footer() {
         </div>
         <div>
           <p className="text-sm text-gray-500 mt-2 md:mt-0">
-            &copy; {currYear} PropertyPulse. All rights reserved.
+            &copy; {currYear} Khatijaz. All rights reserved.
           </p>
         </div>
       </div>

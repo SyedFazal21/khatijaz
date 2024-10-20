@@ -14,7 +14,6 @@ export const metaData = {
 export default function layout({ children }) {
   return (
     <GlobalProvider>
-      <AuthProvider>
         <html lang="en">
           <body>
             <NavBar />
@@ -23,7 +22,6 @@ export default function layout({ children }) {
             <ToastContainer />
           </body>
         </html>
-      </AuthProvider>
     </GlobalProvider>
   );
 }

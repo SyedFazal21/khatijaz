@@ -12,16 +12,23 @@ const nextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "www.licious.in",
+        pathname: "**",
+      },
     ],
   },
 };
 
-module.exports = {
-  async rewrites() {
+const moduleExports = {
+  async headers() {
       return [
         {
-          source: '/api/:path*',
-          destination: 'https://property-pulse-nu.vercel.app/api/:path*',
+          headers: [
+            { key: "Access-Control-Allow-Credentials", value: "true" },
+            { key: "Access-Control-Allow-Origin", value: "*" }
+          ]
         },
       ]
     },
