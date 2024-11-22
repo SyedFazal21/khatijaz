@@ -9,31 +9,33 @@ import {
   getCurrentItemCount,
 } from "../../service/cartService";
 
+let card;
+
 export default function CardDetails() {
   let [data, setData] = useState([]);
   const router = useSearchParams();
   const id = router.get("id") != null ? router.get("id") : 1;
-  const card = data.filter((card) => card._id === id)[0];
   const [itemCount, setItemCount] = useState(0);
 
   useEffect(() => {
-    setItemCount(getCurrentItemCount(card._id));
     
     const fetchItems = async () => {
       const res = await fetch(
         `/api/items`
       );
-
+      
       if (res.status === 200) {
         const result = await res.json();
         setData(result);
+        card = result.filter((card) => card._id === id)[0];
+        setItemCount(getCurrentItemCount(card._id));
       }
     };
 
     fetchItems();
   }, [itemCount]);
 
-  return (
+  return card && ( 
     <div className="md:flex items-start justify-center py-12 2xl:px-20 md:px-6 px-4">
       <div className="xl:w-2/6 lg:w-2/5 w-80 md:block hidden">
         <img className="w-full" alt="image of chicken" src={card.images[0]} />
@@ -108,5 +110,5 @@ export default function CardDetails() {
         </div>
       </div>
     </div>
-  );
+   );
 }
