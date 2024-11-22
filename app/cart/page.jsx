@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 export default function page() {
   const router = useRouter();
 
+  let [data, setData] = useState(null);
   let [cartItems, setCartItems] = useState([]);
   let price = 0;
 
@@ -23,6 +24,19 @@ export default function page() {
 
   useEffect(() => {
     setCartItems(getCartItems());
+
+    const fetchItems = async () => {
+      const res = await fetch(
+        `/api/items`
+      );
+
+      if (res.status === 200) {
+        const result = await res.json();
+        setData(result);
+      }
+    };
+
+    fetchItems();
   }, []);
 
   return (
@@ -62,7 +76,7 @@ export default function page() {
                     <td className="p-2"></td>
                     <td className="p-2">
                       <div className="font-medium text-gray-800">
-                        {getNameById(item.id)}
+                        {data && getNameById(item.id, data)}
                       </div>
                     </td>
                     <td className="p-2">
@@ -70,8 +84,7 @@ export default function page() {
                     </td>
                     <td className="p-2">
                       <div className="text-left font-medium text-green-500">
-                        {getPriceById(item.id) * item.quantity}
-                        {/* {getPriceById(item.id) * item.quantity} */}
+                        {data && getPriceById(item.id, data) * item.quantity}
                       </div>
                     </td>
                     <td className="p-2">
@@ -102,8 +115,8 @@ export default function page() {
 
           <div className="flex justify-end space-x-4 border-t border-gray-100 px-5 py-4 text-2xl font-bold">
             <div>Total</div>
-            {cartItems.map((item) => {
-              price += getPriceById(item.id) * item.quantity;
+            {data && cartItems.map((item) => {
+              price += getPriceById(item.id, data) * item.quantity;
             })}
             <div className="text-blue-600">
               ₹{price} <span x-text="total.toFixed(2)"></span>

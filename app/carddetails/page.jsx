@@ -2,7 +2,6 @@
 import React, { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import data from "../../properties.json";
 import { useState } from "react";
 import {
   addToCart,
@@ -11,6 +10,7 @@ import {
 } from "../../service/cartService";
 
 export default function CardDetails() {
+  let [data, setData] = useState([]);
   const router = useSearchParams();
   const id = router.get("id") != null ? router.get("id") : 1;
   const card = data.filter((card) => card._id === id)[0];
@@ -18,6 +18,19 @@ export default function CardDetails() {
 
   useEffect(() => {
     setItemCount(getCurrentItemCount(card._id));
+    
+    const fetchItems = async () => {
+      const res = await fetch(
+        `/api/items`
+      );
+
+      if (res.status === 200) {
+        const result = await res.json();
+        setData(result);
+      }
+    };
+
+    fetchItems();
   }, [itemCount]);
 
   return (

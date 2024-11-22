@@ -1,5 +1,3 @@
-import data from '../properties.json'
-
 export function removeFromCart(id) {
   let cartItems = getCartItems();
   let currentItem = [];

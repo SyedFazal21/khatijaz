@@ -46,8 +46,7 @@ export default function page() {
     const user = localStorage.getItem("LoggedInUserDetails");
     if (user) {
       const userDetails = JSON.parse(user);
-      console.log(userDetails);
-      setMobileNumber(userDetails.mobile);
+      setMobileNumber(userDetails.mobile ? userDetails.mobile : userDetails.phonenumber);
       setId(userDetails._id);
 
       if (userDetails.username) {

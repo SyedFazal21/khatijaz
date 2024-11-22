@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getPriceById } from "@/service/productService";
 import { useRouter } from "next/navigation";
 import { toast } from 'react-toastify';
@@ -6,7 +6,23 @@ import { toast } from 'react-toastify';
 export default function Modal({ setModal }) {
   const router = useRouter();
   const [error, setError] = useState("");
+  let [data, setData] = useState([]);
   let total = 0;
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const res = await fetch(
+        `/api/items`
+      );
+
+      if (res.status === 200) {
+        const result = await res.json();
+        setData(result);
+      }
+    };
+
+    fetchItems();
+  }, []);
 
   const placeOrder = async () => {
     const user = localStorage.getItem('LoggedInUserDetails');
@@ -23,7 +39,7 @@ export default function Modal({ setModal }) {
     const product_ids = cartItems.map((item) => item.id);
     const product_quantity = cartItems.map((item) => item.quantity);
     cartItems.map((item) => {
-      total += getPriceById(item.id) * item.quantity;
+      total += getPriceById(item.id, data) * item.quantity;
     })
 
     const orderPayload = {

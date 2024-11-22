@@ -1,5 +1,5 @@
 import connectDB from "@/config/database";
-import Category from "@/models/Category";
+import Items from "@/models/Items";
 
 export const dynamic = "force-dynamic";
 
@@ -7,9 +7,9 @@ export const GET = async (request) => {
   try {
     await connectDB();
 
-    const categories = await Category.find({});
+    const items = await Items.find({});
 
-    return new Response(JSON.stringify(categories), { status: 200 });
+    return new Response(JSON.stringify(items), { status: 200 });
   } catch (error) {
     console.log(error.message);
     return new Response("Something went wrong", { status: 500 });

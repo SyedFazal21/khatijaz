@@ -6,6 +6,7 @@ import Pagination from "@/components/Pagination";
 
 export default function page() {
   const router = useRouter();
+  let [data, setData] = useState([]);
   let [orders, setOrders] = useState([]);
   let user_id = "";
 
@@ -40,6 +41,19 @@ export default function page() {
     };
 
     fetchOrders();
+
+    const fetchItems = async () => {
+      const res = await fetch(
+        `/api/items`
+      );
+
+      if (res.status === 200) {
+        const result = await res.json();
+        setData(result);
+      }
+    };
+
+    fetchItems();
   }, [page, pageSize]);
 
   return (
@@ -72,7 +86,7 @@ export default function page() {
                         <div className="flex items-center">
                           <div className="ml-3">
                             <p className="text-gray-900 whitespace-no-wrap">
-                              {getNameById(item.product_ids[0])}
+                              {getNameById(item.product_ids[0], data)}
                               {item.product_ids.length > 1 && (
                                 <span>.....</span>
                               )}
